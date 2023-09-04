@@ -17,8 +17,9 @@ async function includeHTML() {
 
 function render() {
     includeHTML();
+    showContent();
     showProfile();
-    showPost();
+    
 }
 
 
@@ -47,10 +48,8 @@ let posts = [
 
 ];
 
-function showPost() {
-    //document.getElementById('input_container').innerHTML = '';
-    //for (let i = 0; i < posts.length; i++) {
-    for (let i = posts.length - 1; i >= 0; i--) {
+function showContent() {
+    for (let i = 0; i < posts.length; i++) {
         const infoPost = posts[i];
         document.getElementById('input_container').innerHTML +=`
         <div class="single_post">
@@ -68,6 +67,12 @@ function showPost() {
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
                 <p class="likes">Gefällt ${infoPost['likes']} mal</p>
                 <p class="description_text">${infoPost['description']}</p>
+            </div>
+            <div id="new_comment"></div>
+            <div class="new_comment">
+                <input id="author" class="input_name" type="text" placeholder="Dein Name">
+                <textarea rows="4" cols="50" id="input_comment" class="input_comment" wrap="off" placeholder="Dein Kommentar"></textarea> 
+                <button class="button_comment" onclick="newComment()">Absenden!</button>
             </div>
         </div>
         `
@@ -90,11 +95,13 @@ let suggestions = [
     },
 ]
 
-function showProfile() {
-    document.getElementById('profiles').innerHTML = '';
-    for (let i = 0; i < suggestions.length; i++) {
-        const sugInfo = suggestions[i];
-        document.getElementById('profiles').innerHTML +=`
+// Diese Funktion generiert den rechten Bereich (Vorschläge für dich etc.)
+function showProfile() { // Die Funktion nenne ich showProfile da sie die Profile rechts anzeigt
+    document.getElementById('profiles').innerHTML = ''; //Wir leeren es bevor es den neuen Content bekommt
+    for (let i = 0; i < suggestions.length; i++) { //i bekommt den Wert 0, damit in den Texten auf die richtige Position im Array zugegriffen wird, die Forschleife läuft solange durch, bis die letzte Position im Array erreicht ist.
+        const sugInfo = suggestions[i]; //Da suggestions global ist eig überflüssig eine neue Variable dessen Wert zu geben.
+        document.getElementById('profiles').innerHTML += //fügt in den Container "profiles" folgenden HTML Code ein:
+        `
         <div class="line">  
             <div class="imgAndPic">
                 <img class="buttons_header lisas_pic" src="${sugInfo['profileImg']}" alt="Profilbild">
@@ -114,37 +121,28 @@ let comments = []
 let authors = []
 
 function newComment() {
-    let author = document.getElementById('author').value;
-    let post = document.getElementById('input_comment').value;
+    let name = document.getElementById('author').value;
+    let posts = document.getElementById('input_comment').value;
 
-    comments.push(post);
-    authors.push(author);
+    authors.push(name);
+    comments.push(posts);
+    document.getElementById('new_comment').innerHTML = '';
 
-    showComments();
-
-    document.getElementById('author').value = '';
-    document.getElementById('input_comment').value = ''; 
-}
-
-function showComments() {
-    let inputContainer = document.getElementById('input_container');
-    inputContainer.innerHTML = '';
     for (let i = 0; i < comments.length; i++){
-        inputContainer.innerHTML += `
-        <div class="single_post">
-            <div class="author">${author}</div>
+    
+        document.getElementById('new_comment').innerHTML +=`
+        <div class="author">${authors[i]}</div>
             <div class="social_buttons">
+                <p class="description_text">${comments[i]}</p>
                 <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
                 <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
                 <!--<p class="likes">Gefällt mal</p>-->
-                <p class="description_text">${post}</p>
-            </div>
-            `;
-    }   
+            </div>`;
+    }
+    document.getElementById('author').value = '';
+    document.getElementById('input_comment').value = ''; 
+    //showContent();
 }
-
-showPost();
-showProfile();
 
 

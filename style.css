@@ -84,8 +84,8 @@ ul {
     margin-top: 30px;
 }
 .buttons_inPost {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
 }
 
 .image_post {
@@ -94,7 +94,7 @@ ul {
 }
 
 .image_post img {
-    width: 40vw;
+    width: 30vw;
     height: auto;
     object-fit: contain;
     margin-top: 20px;
@@ -205,7 +205,7 @@ ul {
 .input_name {
     width: 20vw;
     height: 20px;
-    margin-left: 80px;
+    margin-left: 23px;
     margin-top: 30px;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -213,7 +213,7 @@ ul {
 .input_comment {
     width: 20vw;
     height: 100px;
-    margin-left: 80px;
+    margin-left: 23px;
     margin-top: 5px;
     white-space: pre-line;
     font-family: Arial, Helvetica, sans-serif;
@@ -222,9 +222,18 @@ ul {
 .button_comment {
     width: 100px;
     height: auto;
-    margin-left: 80px;
+    margin-left: 23px;
     margin-top: 5px;
+    margin-bottom: 5px;
 }
 
+#new_comment {
+    border: 1px solid rgba(0, 0, 0, 0.242);
+    background-color: white;
+}
+
+.author {
+    font-size: 20px;
+}
 
 

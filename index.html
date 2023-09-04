@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+    <title>Kleinergram</title>
+
+    <script>
+        async function includeHTML() {
+            let includeElements = document.querySelectorAll('[w3-include-html]');
+            for (let i = 0; i < includeElements.length; i++) {
+                const element = includeElements[i];
+                file = element.getAttribute("w3-include-html"); // "includes/header.html"
+                let resp = await fetch(file);
+                if (resp.ok) {
+                    element.innerHTML = await resp.text();
+                } else {
+                    element.innerHTML = 'Page not found';
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body onload="render()">
+    <header w3-include-html="header.html"></header>
+    <div id="complete_Content">
+
+        <div class="new_comment">
+            <input id="author" class="input_name" type="text" placeholder="Dein Name">
+            <textarea rows="4" cols="50" name="comment" id="input_comment" class="input_comment" wrap="off" placeholder="Dein Kommentar"></textarea> 
+            <button class="button_comment" onclick="newComment()">Absenden!</button>
+        </div>
+
+
+        <div id="all_content">
+            <div id="input_container"></div>
+
+            <aside id="suggestions_right">
+                <div class="titleBox">
+                    <p>Vorschläge für dich</p>
+                    <p class="p1">Alle ansehen</p>
+                </div>
+                <div id="profiles"></div>
+            </aside>
+        </div>
+    </div>
+    
+
+</body>
+
+</html>

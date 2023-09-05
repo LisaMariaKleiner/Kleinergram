@@ -1,13 +1,20 @@
 // =================== HeaderTemplate
+// Diese async-Funktion wird verwendet, um HTML-Inhalte dynamisch in die Webseite einzufügen.
+
 async function includeHTML() {
-    let includeElements = document.querySelectorAll('[w3-include-html]');
+    let includeElements = document.querySelectorAll('[w3-include-html]');  // Alle Elemente mit dem Attribut 'w3-include-html' auswählen.
+
     for (let i = 0; i < includeElements.length; i++) {
         const element = includeElements[i];
+    // Den Wert des 'w3-include-html'-Attributs abrufen, das den zu inkludierenden Dateipfad angibt.
         file = element.getAttribute("w3-include-html"); // "includes/header.html"
+    // Die Datei über den angegebenen Pfad abrufen.
         let resp = await fetch(file);
         if (resp.ok) {
+    // Wenn die Datei erfolgreich abgerufen wurde, wird der Innere HTML-Inhalt des Elements auf den Inhalt der Datei gesetzt.
             element.innerHTML = await resp.text();
         } else {
+    // Wenn das Abrufen der Datei fehlschlägt, wird 'Seite nicht gefunden' im Element angezeigt.
             element.innerHTML = 'Page not found';
         }
     }
@@ -48,7 +55,9 @@ let posts = [
 
 ];
 
-function showContent() {
+
+// Diese Funktion generiert und zeigt den Inhalt basierend auf dem 'posts'-Array an.
+function showContent() { 
     for (let i = 0; i < posts.length; i++) {
         const infoPost = posts[i];
         document.getElementById('input_container').innerHTML +=`
@@ -68,11 +77,11 @@ function showContent() {
                 <p class="likes">Gefällt ${infoPost['likes']} mal</p>
                 <p class="description_text">${infoPost['description']}</p>
             </div>
-            <div id="new_comment"></div>
+            <div id="new_comment_${i}"></div>
             <div class="new_comment">
-                <input id="author" class="input_name" type="text" placeholder="Dein Name">
-                <textarea rows="4" cols="50" id="input_comment" class="input_comment" wrap="off" placeholder="Dein Kommentar"></textarea> 
-                <button class="button_comment" onclick="newComment()">Absenden!</button>
+                <input id="author_${i}" class="input_name" type="text" placeholder="Dein Name">
+                <textarea rows="4" cols="50" id="input_comment_${i}" class="input_comment" wrap="off" placeholder="Dein Kommentar"></textarea> 
+                <button class="button_comment" onclick="newComment(${i})">Absenden!</button>
             </div>
         </div>
         `
@@ -120,28 +129,39 @@ function showProfile() { // Die Funktion nenne ich showProfile da sie die Profil
 let comments = []
 let authors = []
 
-function newComment() {
-    let name = document.getElementById('author').value;
-    let posts = document.getElementById('input_comment').value;
 
-    authors.push(name);
-    comments.push(posts);
-    document.getElementById('new_comment').innerHTML = '';
-
-    for (let i = 0; i < comments.length; i++){
-    
-        document.getElementById('new_comment').innerHTML +=`
-        <div class="author">${authors[i]}</div>
+// Diese Funktion behandelt das Absenden eines neuen Kommentars.
+function newComment(x) { //Der Wert wird hier von oben übergeben und heißt jetzt x.
+    let nc = "new_comment_"+ x; // die Variable "nc" bekommt den Wert "new_comment[x]"
+    let auth = "author_"+ x; // die Variable "auth" bekommt den Wert "author[x]"
+    let ic = "input_comment_"+ x; // die Variable "ic" bekommt den Wert "input_comment[x]"
+    let name = document.getElementById(auth).value; // Den Namen und den Kommentarinhalt aus den Eingabefeldern abrufen.
+    let posts = document.getElementById(ic).value; // Den Namen und den Kommentarinhalt aus den Eingabefeldern abrufen.
+     
+    // Autoren und Kommentare im jeweiligen Array speichern. (Incl. dessen Wert) *Zweidimensionale Arrays!
+    authors.push([x,name]);
+    console.log(authors);
+    comments.push([x,posts]);
+    document.getElementById(nc).innerHTML = ''; // Kommentarcontainer leeren.
+    // Durch die Kommentare iterieren und sie für den entsprechenden Beitrag anzeigen.
+    for (let i = 0; i < comments.length; i++){  
+        
+        if (authors[i][0] == x) {
+              
+        // Den HTML-Code für jeden Kommentar dem Kommentarcontainer hinzufügen.
+        document.getElementById(nc).innerHTML +=`
+        <div class="author">${authors[i][1]}</div>
             <div class="social_buttons">
-                <p class="description_text">${comments[i]}</p>
+                <p class="description_text">${comments[i][1]}</p>
                 <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
                 <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
                 <!--<p class="likes">Gefällt mal</p>-->
             </div>`;
+        }
     }
-    document.getElementById('author').value = '';
-    document.getElementById('input_comment').value = ''; 
+    document.getElementById(auth).value = ''; // Eingabefelder leeren.
+    document.getElementById(ic).value = ''; // Eingabefelder leeren.
     //showContent();
 }
 

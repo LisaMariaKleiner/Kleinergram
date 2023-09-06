@@ -23,39 +23,40 @@ async function includeHTML() {
 /* ================= Content ==================== */
 
 function render() {
+    loadfromLocalStorage();
     includeHTML();
     showContent();
     showProfile();
 }
 
 
+
 let posts = [
     {
-        "author": "ThinkedIn",
+        "user": "ThinkedIn",
         "photo": "img/firmaWerbung.png",
         "image": "img/thinkedIn.jpg",
         "description": "Finde jetzt DEINEN passenden Job auf ThinkedIn",
-        "likes": "151.619",
+        "likes": [],
         "comments": []
     },
     {
-        'author': 'Heilige IT Gesellschaft',
+        'user': 'Heilige IT Gesellschaft',
         'photo': 'img/firmaWerbung.png',
         'image': 'img/beruf.jpg',
         'description': 'Wir stellen ein! Werde jetzt IT Security Analyst im weltweit erfolgreichsten Unternehmen!',
-        'likes': '987.998',
+        'likes': [],
         "comments": []
     },
     {
-        'author': 'Werbung muss sein gmbH',
+        'user': 'Werbung muss sein gmbH',
         'photo': 'img/firmaWerbung.png',
         'image': 'img/werbung.jpg',
         'description': 'Präsentiere jetzt DEIN Unternehmen auf unseren Werbetafeln!',
-        'likes': '1.562',
+        'likes': [],
         "comments": []
     }
 ];
-
 
 // Diese Funktion generiert und zeigt den Inhalt basierend auf dem 'posts'-Array an.
 function showContent() { 
@@ -65,17 +66,17 @@ function showContent() {
         <div class="single_post">
             <div class="author">
             <img class="profile_photos" src="${infoPost['photo']}">
-            ${infoPost['author']}
+            ${infoPost['user']}
             </div>
 
             <div class="image_post">
                 <img src="${infoPost['image']}">
             </div>
             <div class="social_buttons">
-                <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
+                <img onclick="like(${i})" id="heart_like" class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
                 <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
-                <p class="likes">Gefällt ${infoPost['likes']} mal</p>
+                <p class="likes" id="likenumber">Gefällt ${infoPost['likes']} mal</p>
                 <p class="description_text">${infoPost['description']}</p>
             </div>
             <div id="new_comment_${i}"></div>
@@ -147,59 +148,35 @@ function newComment(x) {
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
             </div>`;
     }
+    saveInLocalStorage(x);
+    render();
     document.getElementById(`author_${x}`).value = ''; // Eingabefelder leeren.
     document.getElementById(`input_comment_${x}`).value = ''; // Eingabefelder leeren.
 }
 
 
-
-
-
-/* ================================ ENTWÜRFE ================================*/
-
-
-
-              
-
-
 // in den LocalStorage speichern
-/*function sendLocalStorage() {
-    let authorAsText = JSON.stringify(authors[i][1]);
-    localStorage.setItem('authors', authorAsText);
-    let commentsAsText = JSON.stringify(comments[i][1]);
-    localStorage.setItem('comments', commentsAsText);
+function saveInLocalStorage(x){
+    let postsJSON = JSON.stringify(posts);
+    localStorage.setItem('posts', postsJSON);
 }
 
-
-/*function sendLocalStorage() {
-    // Zuerst prüfen, ob es bereits Daten im LocalStorage gibt.
-    let storedAuthors = JSON.parse(localStorage.getItem('authors')) || [];
-    let storedComments = JSON.parse(localStorage.getItem('comments')) || [];
-
-    // Die neuen Autoren und Kommentare hinzufügen.
-    for (let i = 0; i < authors.length; i++) {
-        storedAuthors.push(authors[i][1]);
-        storedComments.push(comments[i][1]);
+// aus dem LocalStorage laden
+function loadfromLocalStorage(){
+    const storedPostsJSON = localStorage.getItem('posts');
+    if (storedPostsJSON) {
+        posts = JSON.parse(storedPostsJSON);
     }
+}
 
-    // Die aktualisierten Daten zurück in den LocalStorage speichern.
-    localStorage.setItem('authors', JSON.stringify(storedAuthors));
-    localStorage.setItem('comments', JSON.stringify(storedComments));
-}*/
+let likeCount = 0;
 
+function like(y) {
+    likeCount++;
+    document.getElementById('likenumber'[y]).textContent = likenumber;
+}
 
-/*function loadLocalStorage() {
-    // Die Autoren- und Kommentardaten aus dem LocalStorage abrufen.
-    let storedAuthors = JSON.parse(localStorage.getItem('authors')) || [];
-    let storedComments = JSON.parse(localStorage.getItem('comments')) || [];
-
-    // Die Daten in die globalen Arrays einfügen.
-    for (let i = 0; i < storedAuthors.length; i++) {
-        authors.push([i, storedAuthors[i]]);
-        comments.push([i, storedComments[i]]);
-    }
-}*/
-
+/* ================================ ENTWÜRFE ================================*/
 
 
 

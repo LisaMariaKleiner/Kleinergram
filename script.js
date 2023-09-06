@@ -26,17 +26,17 @@ function render() {
     includeHTML();
     showContent();
     showProfile();
-    
 }
 
 
 let posts = [
     {
-        'author': 'ThinkedIn',
-        'photo': 'img/firmaWerbung.png',
-        'image': 'img/thinkedIn.jpg',
-        'description': 'Finde jetzt DEINEN passenden Job auf ThinkedIn',
-        'likes': '151.619',
+        "author": "ThinkedIn",
+        "photo": "img/firmaWerbung.png",
+        "image": "img/thinkedIn.jpg",
+        "description": "Finde jetzt DEINEN passenden Job auf ThinkedIn",
+        "likes": "151.619",
+        "comments": []
     },
     {
         'author': 'Heilige IT Gesellschaft',
@@ -44,6 +44,7 @@ let posts = [
         'image': 'img/beruf.jpg',
         'description': 'Wir stellen ein! Werde jetzt IT Security Analyst im weltweit erfolgreichsten Unternehmen!',
         'likes': '987.998',
+        "comments": []
     },
     {
         'author': 'Werbung muss sein gmbH',
@@ -51,15 +52,15 @@ let posts = [
         'image': 'img/werbung.jpg',
         'description': 'Präsentiere jetzt DEIN Unternehmen auf unseren Werbetafeln!',
         'likes': '1.562',
+        "comments": []
     }
-
 ];
 
 
 // Diese Funktion generiert und zeigt den Inhalt basierend auf dem 'posts'-Array an.
 function showContent() { 
     for (let i = 0; i < posts.length; i++) {
-        const infoPost = posts[i];
+        let infoPost = posts[i];
         document.getElementById('input_container').innerHTML +=`
         <div class="single_post">
             <div class="author">
@@ -126,43 +127,79 @@ function showProfile() { // Die Funktion nenne ich showProfile da sie die Profil
 }
 
 
-let comments = []
-let authors = []
-
-
 // Diese Funktion behandelt das Absenden eines neuen Kommentars.
-function newComment(x) { //Der Wert wird hier von oben übergeben und heißt jetzt x.
-    let nc = "new_comment_"+ x; // die Variable "nc" bekommt den Wert "new_comment[x]"
-    let auth = "author_"+ x; // die Variable "auth" bekommt den Wert "author[x]"
-    let ic = "input_comment_"+ x; // die Variable "ic" bekommt den Wert "input_comment[x]"
-    let name = document.getElementById(auth).value; // Den Namen und den Kommentarinhalt aus den Eingabefeldern abrufen.
-    let posts = document.getElementById(ic).value; // Den Namen und den Kommentarinhalt aus den Eingabefeldern abrufen.
-     
-    // Autoren und Kommentare im jeweiligen Array speichern. (Incl. dessen Wert) *Zweidimensionale Arrays!
-    authors.push([x,name]);
-    console.log(authors);
-    comments.push([x,posts]);
-    document.getElementById(nc).innerHTML = ''; // Kommentarcontainer leeren.
-    // Durch die Kommentare iterieren und sie für den entsprechenden Beitrag anzeigen.
-    for (let i = 0; i < comments.length; i++){  
-        
-        if (authors[i][0] == x) {
-              
-        // Den HTML-Code für jeden Kommentar dem Kommentarcontainer hinzufügen.
-        document.getElementById(nc).innerHTML +=`
-        <div class="author">${authors[i][1]}</div>
+
+function newComment(x) {
+    posts[x]["comments"].push(
+        {
+            "author": document.getElementById(`author_${x}`).value,
+            "content": document.getElementById(`input_comment_${x}`).value
+        }
+    )
+    document.getElementById(`new_comment_${x}`).innerHTML = '';
+    for (let i = 0; i < posts[x]['comments'].length; i++) {
+        document.getElementById(`new_comment_${x}`).innerHTML += `
+        <div class="author"> ${posts[x]["comments"][i]["author"]}</div>
             <div class="social_buttons">
-                <p class="description_text">${comments[i][1]}</p>
+                <p class="description_text">${posts[x]["comments"][i]["content"]}</p>
                 <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
                 <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
-                <!--<p class="likes">Gefällt mal</p>-->
             </div>`;
-        }
     }
-    document.getElementById(auth).value = ''; // Eingabefelder leeren.
-    document.getElementById(ic).value = ''; // Eingabefelder leeren.
-    //showContent();
+    document.getElementById(`author_${x}`).value = ''; // Eingabefelder leeren.
+    document.getElementById(`input_comment_${x}`).value = ''; // Eingabefelder leeren.
 }
+
+
+
+
+
+/* ================================ ENTWÜRFE ================================*/
+
+
+
+              
+
+
+// in den LocalStorage speichern
+/*function sendLocalStorage() {
+    let authorAsText = JSON.stringify(authors[i][1]);
+    localStorage.setItem('authors', authorAsText);
+    let commentsAsText = JSON.stringify(comments[i][1]);
+    localStorage.setItem('comments', commentsAsText);
+}
+
+
+/*function sendLocalStorage() {
+    // Zuerst prüfen, ob es bereits Daten im LocalStorage gibt.
+    let storedAuthors = JSON.parse(localStorage.getItem('authors')) || [];
+    let storedComments = JSON.parse(localStorage.getItem('comments')) || [];
+
+    // Die neuen Autoren und Kommentare hinzufügen.
+    for (let i = 0; i < authors.length; i++) {
+        storedAuthors.push(authors[i][1]);
+        storedComments.push(comments[i][1]);
+    }
+
+    // Die aktualisierten Daten zurück in den LocalStorage speichern.
+    localStorage.setItem('authors', JSON.stringify(storedAuthors));
+    localStorage.setItem('comments', JSON.stringify(storedComments));
+}*/
+
+
+/*function loadLocalStorage() {
+    // Die Autoren- und Kommentardaten aus dem LocalStorage abrufen.
+    let storedAuthors = JSON.parse(localStorage.getItem('authors')) || [];
+    let storedComments = JSON.parse(localStorage.getItem('comments')) || [];
+
+    // Die Daten in die globalen Arrays einfügen.
+    for (let i = 0; i < storedAuthors.length; i++) {
+        authors.push([i, storedAuthors[i]]);
+        comments.push([i, storedComments[i]]);
+    }
+}*/
+
+
 
 

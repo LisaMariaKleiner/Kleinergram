@@ -236,4 +236,18 @@ ul {
     font-size: 20px;
 }
 
+.like_button {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}
+.like_button.active {
+    background-color: red;
+}
+
+
+
+
 

@@ -23,10 +23,20 @@ async function includeHTML() {
 /* ================= Content ==================== */
 
 function render() {
-    loadfromLocalStorage();
+    
+    
     includeHTML();
+    loadfromLocalStorage();
     showContent();
     showProfile();
+    
+    // Mit diesen Forschleifen wird vermieden, dass bei jedem neuladen der Seite wieder alle bestehenden Kommentare neu gerendert werden.
+    for (let i = 0; i < posts.length; i++) {
+        document.getElementById(`new_comment_${i}`).innerHTML = ''; // Leert in der Forschleife nacheinander die New_Comment Container
+        for (let y = 0; y < posts[i]['comments'].length; y++) { //Führt beim FirstLoad die renderCommentsFunktion so oft aus wie Inhalte im postsArray-> comments sind.
+            renderComments(i,y);
+        }
+    }
 }
 
 
@@ -37,7 +47,8 @@ let posts = [
         "photo": "img/firmaWerbung.png",
         "image": "img/thinkedIn.jpg",
         "description": "Finde jetzt DEINEN passenden Job auf ThinkedIn",
-        "likes": [],
+        "likes": [100],
+        "liked": false,
         "comments": []
     },
     {
@@ -45,7 +56,8 @@ let posts = [
         'photo': 'img/firmaWerbung.png',
         'image': 'img/beruf.jpg',
         'description': 'Wir stellen ein! Werde jetzt IT Security Analyst im weltweit erfolgreichsten Unternehmen!',
-        'likes': [],
+        'likes': [200],
+        "liked": false,
         "comments": []
     },
     {
@@ -53,7 +65,8 @@ let posts = [
         'photo': 'img/firmaWerbung.png',
         'image': 'img/werbung.jpg',
         'description': 'Präsentiere jetzt DEIN Unternehmen auf unseren Werbetafeln!',
-        'likes': [],
+        'likes': [500],
+        "liked": false,
         "comments": []
     }
 ];
@@ -73,10 +86,10 @@ function showContent() {
                 <img src="${infoPost['image']}">
             </div>
             <div class="social_buttons">
-                <img onclick="like(${i})" id="heart_like" class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
+                <img onclick="likePost(${i})" id="post_toggle_button${i}" class="like_button" src="./img/likeheart.svg" alt="likebutton"></a>
                 <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
                 <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
-                <p class="likes" id="likenumber">Gefällt ${infoPost['likes']} mal</p>
+                <span class="likes" id="likenumber${i}">Gefällt ${infoPost['likes']} mal</span>
                 <p class="description_text">${infoPost['description']}</p>
             </div>
             <div id="new_comment_${i}"></div>
@@ -129,34 +142,77 @@ function showProfile() { // Die Funktion nenne ich showProfile da sie die Profil
 
 
 // Diese Funktion behandelt das Absenden eines neuen Kommentars.
-
 function newComment(x) {
+
     posts[x]["comments"].push(
         {
             "author": document.getElementById(`author_${x}`).value,
             "content": document.getElementById(`input_comment_${x}`).value
         }
-    )
-    document.getElementById(`new_comment_${x}`).innerHTML = '';
-    for (let i = 0; i < posts[x]['comments'].length; i++) {
-        document.getElementById(`new_comment_${x}`).innerHTML += `
-        <div class="author"> ${posts[x]["comments"][i]["author"]}</div>
-            <div class="social_buttons">
-                <p class="description_text">${posts[x]["comments"][i]["content"]}</p>
-                <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
-                <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
-                <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
-            </div>`;
-    }
+    )   
+    renderComments(x,posts[x]['comments'].length-1) 
     saveInLocalStorage(x);
-    render();
     document.getElementById(`author_${x}`).value = ''; // Eingabefelder leeren.
     document.getElementById(`input_comment_${x}`).value = ''; // Eingabefelder leeren.
 }
 
 
+//Rendert den new_Comment Container nur 1x ! Damit bei einem neuen Kommentar immer nur 1 neuer Container gerendert wird und nicht wieder alle bereits bestehenden(bei millionen Kommentaren wirds sonst kompliziert beim laden)
+function renderComments(x,y){
+    
+        document.getElementById(`new_comment_${x}`).innerHTML +=`
+        <div class="author"> ${posts[x]["comments"][y]["author"]}</div>
+            <div class="social_buttons">
+                <p class="description_text">${posts[x]["comments"][y]["content"]}</p>
+                <img onclick="likeComment(${x}, ${y})" id="toggle_button${x}${y}" class="like_button" src="./img/likeheart.svg" alt="likebutton"></a>
+                <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
+                <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
+            </div>`;
+}
+
+
+// Betätigt den Togglebutton(like) in den Kommentaren
+function likeComment(x,y){
+    let toggleButton = document.getElementById(`toggle_button${x}${y}`);
+    toggleButton.classList.toggle("active");
+}
+
+
+// Betätigt den ToggleButton(like) in dem PostContainer
+function likePost(i){
+    let counter = document.getElementById(`likenumber${i}`);
+    let like = document.getElementById(`post_toggle_button${i}`);
+
+        if (!posts[i]['liked']){
+            posts[i]['likes']++;
+            posts[i]['liked'] = true;
+
+            like.classList.add("active");
+            
+        } else {
+            dislike(i);
+        }
+        let iLike = posts[i]['likes'];
+        counter.innerHTML = `Gefällt ${iLike} Mal`;
+}
+
+
+function dislike(i) {
+    let counter = document.getElementById(`likenumber${i}`);
+    let like = document.getElementById(`post_toggle_button${i}`);
+
+    if (posts[i]['liked']) {
+        posts[i]['likes']--;
+        posts[i]['liked'] = false;
+        like.classList.remove("active");
+    }
+    let iLike = posts[i]['likes'];
+    counter.innerHTML = `Gefällt ${iLike} Mal`;
+}
+
+
 // in den LocalStorage speichern
-function saveInLocalStorage(x){
+function saveInLocalStorage(){
     let postsJSON = JSON.stringify(posts);
     localStorage.setItem('posts', postsJSON);
 }
@@ -169,14 +225,60 @@ function loadfromLocalStorage(){
     }
 }
 
-let likeCount = 0;
 
-function like(y) {
-    likeCount++;
-    document.getElementById('likenumber'[y]).textContent = likenumber;
-}
+
+
 
 /* ================================ ENTWÜRFE ================================*/
 
+/*for (let i = 0; i < posts[x]['comments'].length-1; i++) {
+    var toggleButton = document.getElementById(`toggle_button${x}${y}`);
+    var isActive = false;
 
+    toggleButton.addEventListener("click", function() {
+        isActive = !isActive;
+        if (isActive) {
+          toggleButton.innerHTML = "An";
+          toggleButton.classList.add("active");
+        } else {
+          toggleButton.innerHTML = "Aus";
+          toggleButton.classList.remove("active");
+     }
+  });
+}
+/*function like(i) {
+    // Den "Like"-Button und die Anzahl der Likes abrufen
+    const likeButton = document.getElementById(`likeButton_${i}`);
+    const likeCount = document.getElementById(`likenumber_${i}`);
+    
+    // Überprüfen, ob der "Like"-Button bereits aktiviert ist
+    if (likeButton.classList.contains('liked')) {
+        // Wenn bereits geliked wurde, entferne die Klasse "liked", reduziere die Anzahl der Likes und aktualisiere die Anzeige
+        likeButton.classList.remove('liked');
+        posts[i].likes--;
+        likeCount.textContent = `Gefällt ${posts[i].likes} mal`;
+    } else {
+        // Wenn noch nicht geliked wurde, füge die Klasse "liked" hinzu, erhöhe die Anzahl der Likes und aktualisiere die Anzeige
+        likeButton.classList.add('liked');
+        posts[i].likes++;
+        likeCount.textContent = `Gefällt ${posts[i].likes} mal`;
+    }
 
+    // Speichere die aktualisierten Daten im LocalStorage
+    saveInLocalStorage(i);
+}*/
+/*
+function renderComments(x) {
+    document.getElementById(`new_comment_${x}`).innerHTML = '';
+        for (let i = 0; i < posts[x]['comments'].length; i++) {
+        document.getElementById(`new_comment_${x}`).innerHTML += `
+        <div class="author"> ${posts[x]["comments"][i]["author"]}</div>
+            <div class="social_buttons">
+                <p class="description_text">${posts[x]["comments"][i]["content"]}</p>
+                <img class="buttons_inPost" src="./img/likebutton.png" alt="likebutton"></a>
+                <img class="buttons_inPost" src="./img/commentbutton.png" alt="commentbutton"></a>
+                <img class="buttons_inPost" src="./img/sendbutton.png" alt="nachrichtenbutton"></a>
+            </div>`;
+        }
+}
+*/
